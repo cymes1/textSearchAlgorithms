@@ -7,7 +7,7 @@ const main_test_file = "src/test.zig";
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "Text Search",
-        .root_source_file = .{ .path = main_file },
+        .root_source_file = .{ .src_path = .{ .owner = b, .sub_path = main_file } },
         .target = b.standardTargetOptions(.{}),
         .optimize = b.standardOptimizeOption(.{}),
     });
@@ -15,7 +15,7 @@ pub fn build(b: *std.Build) void {
     configureTests(b);
 
     const install_content_step = b.addInstallDirectory(.{
-        .source_dir = .{ .path = thisDir() ++ "/" ++ content_dir },
+        .source_dir = .{ .src_path = .{ .owner = b, .sub_path = thisDir() ++ "/" ++ content_dir } },
         .install_dir = .{ .custom = "" },
         .install_subdir = "bin/" ++ content_dir,
     });
