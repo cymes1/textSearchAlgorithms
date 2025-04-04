@@ -1,6 +1,7 @@
 pub const SearchError = error{
     EmptyString,
     PatternTooLong,
+    BufferTooSmall,
 };
 
 pub const Result = struct {

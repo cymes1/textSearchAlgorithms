@@ -3,20 +3,26 @@ const algorithms = @import("algorithms.zig");
 const SearchError = algorithms.SearchError;
 const Result = algorithms.Result;
 
-fn pref(P: []u8, s: []const u8) void {
-    // P size needs to be s.len + 1 and initialized to 0
+pub fn pref(pattern: []const u8, lps: []u8) SearchError!void {
+    if (pattern.len == 0)
+        return error.EmptyString;
+    if (lps.len < pattern.len)
+        return error.BufferTooSmall;
 
-    const t: u8 = 0;
-    const n = s.len;
-
-    for(2..n) |i|
-    {
-        while (t > 0 and s[t + 1] != s[i])
-            t = P[t];
-        if( s[t+1] == s[i] )
-            t+= 1;
-        P[i] = t;
-        i += 1;
+    var j: u8 = 0;
+    var i: u8 = 1;
+    lps[0] = 0;
+    while (i < lps.len) {
+        if (pattern[i] == pattern[j]) {
+            j += 1;
+            lps[i] = j;
+            i += 1;
+        } else if (j != 0) {
+            j = lps[j - 1];
+        } else {
+            lps[i] = 0;
+            i += 1;
+        }
     }
 }
 
@@ -46,9 +52,9 @@ pub fn search(pattern: []const u8, text: []const u8) SearchError!bool {
 //  string S = "#" + W + "#" + T;
 //  vector<int> P;
 //  Pref(P, S);
-// 
+//
 //  unsigned int i, ws = W.size();
-// 
+//
 //  for( i = ws + 2; i < S.size(); i++ )
 //  {
 //  //wypisz pozycje wzorca w tekscie
