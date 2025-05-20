@@ -6,7 +6,7 @@ const main_test_file = "src/test.zig";
 
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
-        .name = "Text Search",
+        .name = "TextSearch",
         .root_source_file = .{ .src_path = .{ .owner = b, .sub_path = main_file } },
         .target = b.standardTargetOptions(.{}),
         .optimize = b.standardOptimizeOption(.{}),

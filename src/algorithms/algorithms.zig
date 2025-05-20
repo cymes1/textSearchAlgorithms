@@ -2,6 +2,7 @@ pub const SearchError = error{
     EmptyString,
     PatternTooLong,
     BufferTooSmall,
+    Error,
 };
 
 pub const Result = struct {

@@ -12,7 +12,7 @@ pub fn pref(pattern: []const u8, lps: []u8) SearchError!void {
     var j: u8 = 0;
     var i: u8 = 1;
     lps[0] = 0;
-    while (i < lps.len) {
+    while (i < pattern.len) {
         if (pattern[i] == pattern[j]) {
             j += 1;
             lps[i] = j;
@@ -32,14 +32,28 @@ pub fn search(pattern: []const u8, text: []const u8) SearchError!bool {
     if (pattern.len > text.len)
         return error.PatternTooLong;
 
-    for (0..text.len) |i| {
-        for (pattern, 0..) |pattern_char, j| {
-            const text_char = text[i + j];
+    var lps: [64]u8 = undefined;
+    try pref(pattern, &lps);
+
+    var i: u32 = 0;
+    while (i < text.len) {
+        var j: u16 = 0;
+        while (j < pattern.len) {
+            const pattern_char = pattern[j];
+            const text_char = text[i];
             if (text_char != pattern_char) {
-                break;
+                if (lps[j] == 0) {
+                    i += 1;
+                    break;
+                }
+
+                j = lps[j];
+                continue;
             }
 
-            if (j == pattern.len - 1)
+            j += 1;
+            i += 1;
+            if (j == pattern.len)
                 return true;
         }
     }
@@ -47,41 +61,42 @@ pub fn search(pattern: []const u8, text: []const u8) SearchError!bool {
     return false;
 }
 
-//void KMP( string &T, string &W )
-//{
-//  string S = "#" + W + "#" + T;
-//  vector<int> P;
-//  Pref(P, S);
-//
-//  unsigned int i, ws = W.size();
-//
-//  for( i = ws + 2; i < S.size(); i++ )
-//  {
-//  //wypisz pozycje wzorca w tekscie
-//  if( P[i] == ws ) printf("%d\n", i-ws-ws);
-//  }
-//}
-
 pub fn searchAllOccurances(pattern: []const u8, text: []const u8) SearchError!Result {
     if (pattern.len == 0 or text.len == 0)
         return error.EmptyString;
     if (pattern.len > text.len)
         return error.PatternTooLong;
 
+    var lps: [64]u8 = undefined;
+    try pref(pattern, &lps);
+
     var result = Result{};
     var firstOccuranceLine: u16 = 1;
-    for (0..text.len) |i| {
+
+    var i: u32 = 0;
+    while (i < text.len) {
         if (result.occuranceCount == 0 and text[i] == '\n')
             firstOccuranceLine += 1;
 
-        for (pattern, 0..) |pattern_char, j| {
-            const text_char = text[i + j];
+        var j: u16 = 0;
+        while (j < pattern.len) {
+            const pattern_char = pattern[j];
+            const text_char = text[i];
             if (text_char != pattern_char) {
-                break;
+                if (lps[j] == 0) {
+                    i += 1;
+                    break;
+                }
+
+                j = lps[j];
+                continue;
             }
 
-            if (j == pattern.len - 1) {
+            j += 1;
+            i += 1;
+            if (j == pattern.len) {
                 result.occuranceCount += 1;
+                break;
             }
         }
     }

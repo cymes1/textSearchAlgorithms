@@ -42,14 +42,52 @@ test "kmp_lps_correct" {
 // ============
 // search
 // ============
-//test "naive_search_empty_text" {
-//    const text = "";
-//    const pattern = "";
-//
-//    _ = kmp.search(pattern, text) catch |err| {
-//        try expect(err == SearchError.EmptyString);
-//        return;
-//    };
-//
-//    try expect(false);
-//}
+test "kmp_search_empty_text" {
+    const text = "";
+    const pattern = "";
+
+    _ = kmp.search(pattern, text) catch |err| {
+        try expect(err == SearchError.EmptyString);
+        return;
+    };
+
+    try expect(false);
+}
+
+test "kmp_search_empty_pattern" {
+    const text = "";
+    const pattern = "";
+
+    _ = kmp.search(pattern, text) catch |err| {
+        try expect(err == SearchError.EmptyString);
+        return;
+    };
+
+    try expect(false);
+}
+
+test "kmp_search_pattern_longer_than_text" {
+    const text = "text";
+    const pattern = "longText";
+
+    _ = kmp.search(pattern, text) catch |err| {
+        try expect(err == SearchError.PatternTooLong);
+        return;
+    };
+
+    try expect(false);
+}
+
+test "kmp_search_pattern_found" {
+    const text = "This is text for tests";
+    const pattern = "te";
+
+    try expect(try kmp.search(pattern, text));
+}
+
+test "kmp_search_pattern_not_found" {
+    const text = "This is text for tests";
+    const pattern = "This is text for testx";
+
+    try expect(!try kmp.search(pattern, text));
+}

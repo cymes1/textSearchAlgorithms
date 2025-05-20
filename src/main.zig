@@ -36,6 +36,8 @@ pub fn main() !void {
         if (chosenOption == AlgorithmOptions.compare) {
             try stdout.print("======== Naive algorithm ========", .{});
             try runNaive(file);
+            try stdout.print("======== KMP algorithm ========", .{});
+            try runKMP(file);
         }
     }
 }
